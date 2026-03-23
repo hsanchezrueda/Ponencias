@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansiedad — Primer Nivel · Henry Sánchez Rueda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FDF6F0;
+  --white: #FFFFFF;
+  --violet: #7C3AED;
+  --violet-dark: #5B21B6;
+  --violet-light: #EDE9FE;
+  --orange: #F97316;
+  --orange-light: #FFF3E8;
+  --amber: #F59E0B;
+  --amber-light: #FFFBEB;
+  --rose: #F43F5E;
+  --rose-light: #FFF1F2;
+  --navy: #1C0A3C;
+  --slate: #4A3666;
+  --muted: #9B8DB0;
+  --border: #E8DFF5;
+  --text: #1C0A3C;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;overflow-x:hidden;}
+
+#progress{position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,var(--violet),var(--orange),var(--amber));z-index:200;transition:width .25s;border-radius:0 3px 3px 0;}
+#counter{position:fixed;top:16px;right:20px;font-family:monospace;font-size:11px;color:var(--muted);z-index:200;background:rgba(255,255,255,.92);padding:4px 10px;border-radius:20px;border:1px solid var(--border);letter-spacing:.1em;}
+#nav-hint{position:fixed;bottom:18px;right:20px;font-size:11px;color:var(--muted);font-family:monospace;z-index:200;background:rgba(255,255,255,.92);padding:5px 12px;border-radius:20px;border:1px solid var(--border);transition:opacity 1s;}
+
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-30px);transition:opacity .6s ease,transform .6s ease;}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}.d6{transition-delay:.6s}
+
+/* COVER */
+.cover{min-height:100vh;background:var(--navy);display:flex;align-items:center;padding:80px 64px;position:relative;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;}
+.b1{width:580px;height:580px;background:rgba(124,58,237,.28);top:-140px;right:-140px;}
+.b2{width:400px;height:400px;background:rgba(249,115,22,.16);bottom:-80px;left:160px;}
+.b3{width:320px;height:320px;background:rgba(245,158,11,.14);bottom:100px;right:200px;}
+.cover-inner{position:relative;z-index:1;max-width:820px;}
+.live-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.35);color:#C4B5FD;font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:6px 14px;border-radius:20px;font-family:monospace;margin-bottom:28px;}
+.live-badge::before{content:'';width:7px;height:7px;background:#C4B5FD;border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.5);}}
+.cover-title{font-family:'Syne',sans-serif;font-size:clamp(5rem,13vw,11rem);font-weight:800;line-height:.86;letter-spacing:-.045em;color:#fff;margin-bottom:16px;}
+.cover-title .accent{color:#C4B5FD;}
+.cover-sub{font-size:1.1rem;color:rgba(255,255,255,.5);max-width:46ch;line-height:1.7;margin-bottom:36px;}
+.cover-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
+.tag{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:5px 12px;border-radius:4px;font-family:monospace;}
+.cover-author{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;}
+.author-name{font-family:'Cabinet Grotesk',sans-serif;font-size:1.1rem;font-weight:800;color:#fff;}
+.author-role{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:5px;font-family:monospace;}
+
+.slide{min-height:100vh;padding:80px 64px;display:flex;flex-direction:column;justify-content:center;max-width:1120px;margin:0 auto;border-bottom:1px solid var(--border);position:relative;}
+.slide-num{font-family:monospace;font-size:11px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;}
+h2{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.9rem);font-weight:800;line-height:1.1;letter-spacing:-.025em;color:var(--navy);margin-bottom:16px;}
+h2 em{color:var(--violet);font-style:normal;}
+.lead{font-size:1.02rem;color:var(--slate);line-height:1.75;max-width:70ch;}
+h3{font-family:'Cabinet Grotesk',sans-serif;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:var(--violet);margin-bottom:12px;}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:14px;margin-top:30px;}
+.stat-card{background:var(--white);border-radius:18px;padding:26px 22px;border:1px solid var(--border);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;cursor:default;}
+.stat-card:hover{transform:translateY(-6px);box-shadow:0 18px 44px rgba(124,58,237,.12);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;border-radius:18px 18px 0 0;background:var(--violet);}
+.stat-card.orange::before{background:var(--orange);}
+.stat-card.amber::before{background:var(--amber);}
+.stat-card.rose::before{background:var(--rose);}
+.stat-num{font-family:'Syne',sans-serif;font-size:3.4rem;font-weight:800;line-height:1;color:var(--violet);margin-bottom:10px;letter-spacing:-.03em;}
+.stat-card.orange .stat-num{color:var(--orange);}
+.stat-card.amber .stat-num{color:var(--amber);}
+.stat-card.rose .stat-num{color:var(--rose);}
+.stat-label{font-size:.87rem;color:var(--slate);line-height:1.5;}
+
+.info-box{background:var(--violet-light);border-left:4px solid var(--violet);padding:16px 20px;border-radius:0 12px 12px 0;margin-top:22px;font-size:.9rem;color:var(--violet-dark);line-height:1.65;max-width:78ch;}
+.info-box.orange{background:var(--orange-light);border-left-color:var(--orange);color:#7C3100;}
+.info-box.amber{background:var(--amber-light);border-left-color:var(--amber);color:#6B4A00;}
+.info-box.rose{background:var(--rose-light);border-left-color:var(--rose);color:#9B1230;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+.col-card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:24px;transition:transform .25s,box-shadow .25s;}
+.col-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(124,58,237,.09);}
+
+ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
+li{color:var(--slate);font-size:.915rem;padding-left:18px;position:relative;line-height:1.65;}
+li::before{content:'▸';position:absolute;left:0;color:var(--violet);font-size:.75rem;top:4px;}
+li strong{color:var(--navy);font-weight:600;}
+
+.table-wrap{background:var(--white);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-top:26px;}
+table{width:100%;border-collapse:collapse;font-size:.875rem;}
+thead{background:var(--navy);}
+thead th{padding:12px 16px;text-align:left;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);font-weight:500;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--violet-light);}
+tbody td{padding:11px 16px;color:var(--slate);vertical-align:top;line-height:1.55;}
+tbody td:first-child{color:var(--navy);font-weight:600;}
+
+.sym-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-top:26px;}
+.sym-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;text-align:center;transition:transform .25s,box-shadow .25s,border-color .25s;cursor:default;}
+.sym-card:hover{transform:translateY(-6px) rotate(1.5deg);box-shadow:0 16px 36px rgba(124,58,237,.14);border-color:var(--violet);}
+.sym-icon{font-size:2.2rem;display:block;margin-bottom:10px;}
+.sym-name{font-weight:700;font-size:.875rem;color:var(--navy);margin-bottom:4px;}
+.sym-desc{font-size:.775rem;color:var(--muted);line-height:1.5;}
+
+.case-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:26px;}
+@media(max-width:720px){.case-grid{grid-template-columns:1fr;}}
+.case-card{background:var(--white);border-radius:18px;border:1px solid var(--border);padding:26px;}
+.case-name{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--navy);margin-bottom:3px;}
+.case-meta{font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
+.case-label{font-family:monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--violet);margin-top:14px;margin-bottom:5px;font-weight:600;}
+.case-text{font-size:.895rem;color:var(--slate);line-height:1.65;}
+.case-quote{font-style:italic;color:var(--navy);border-left:3px solid var(--violet);padding-left:14px;font-size:.9rem;line-height:1.7;}
+.result-pill{display:inline-block;background:var(--violet-light);border:1.5px solid var(--violet);color:var(--violet);padding:9px 16px;border-radius:8px;font-family:monospace;font-size:.83rem;margin-top:18px;font-weight:600;}
+.sep{width:32px;height:3px;background:var(--violet);border-radius:2px;margin:16px 0;}
+
+/* LOOP BOX */
+.loop-box{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:26px;margin-top:24px;max-width:640px;}
+.loop-steps{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;}
+.loop-item{background:var(--violet-light);border:1px solid #C4B5FD;padding:8px 14px;border-radius:8px;font-size:.85rem;color:var(--violet-dark);font-weight:600;}
+.loop-arrow{color:var(--orange);font-size:1.3rem;font-weight:800;}
+
+/* DISORDER GRID */
+.disorder-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:26px;}
+.disorder-card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;cursor:default;}
+.disorder-card:hover{transform:translateY(-5px);box-shadow:0 14px 36px rgba(124,58,237,.12);}
+.disorder-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;border-radius:18px 18px 0 0;background:var(--violet);}
+.disorder-card.orange::before{background:var(--orange);}
+.disorder-card.amber::before{background:var(--amber);}
+.disorder-card.rose::before{background:var(--rose);}
+.disorder-code{font-family:monospace;font-size:10px;letter-spacing:.15em;color:var(--violet);margin-bottom:6px;font-weight:600;}
+.disorder-card.orange .disorder-code{color:var(--orange);}
+.disorder-card.amber .disorder-code{color:var(--amber);}
+.disorder-card.rose .disorder-code{color:var(--rose);}
+.disorder-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:10px;}
+.disorder-desc{font-size:.845rem;color:var(--slate);line-height:1.65;}
+
+.flow{display:flex;flex-direction:column;gap:0;margin-top:30px;max-width:580px;}
+.flow-step{display:flex;gap:18px;position:relative;}
+.flow-step:not(:last-child)::after{content:'';position:absolute;left:22px;top:48px;width:2px;height:calc(100% - 12px);background:linear-gradient(to bottom,var(--violet),var(--border));}
+.flow-dot{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet-dark));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0;margin-top:2px;box-shadow:0 5px 16px rgba(124,58,237,.38);}
+.flow-body{padding:8px 0 28px;}
+.flow-title{font-weight:700;color:var(--navy);margin-bottom:4px;font-size:.97rem;}
+.flow-desc{font-size:.875rem;color:var(--slate);line-height:1.6;}
+
+.closing{min-height:100vh;background:var(--navy);display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 64px;flex-direction:column;position:relative;overflow:hidden;}
+.closing::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(124,58,237,.18) 0%,transparent 65%);}
+.closing-quote{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:800;line-height:1.12;letter-spacing:-.025em;color:#fff;max-width:24ch;margin-bottom:22px;position:relative;z-index:1;}
+.closing-quote em{color:#C4B5FD;font-style:normal;}
+.closing-sub{font-size:1rem;color:rgba(255,255,255,.48);max-width:44ch;margin:0 auto 36px;line-height:1.7;position:relative;z-index:1;}
+.pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;}
+.pill{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.75);padding:9px 18px;border-radius:30px;font-family:monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,border-color .2s,color .2s;cursor:default;}
+.pill:hover{background:rgba(124,58,237,.25);border-color:rgba(196,181,253,.5);color:#C4B5FD;}
+.closing-author{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;margin-top:40px;position:relative;z-index:1;}
+.closing-author-name{font-family:'Cabinet Grotesk',sans-serif;font-size:1rem;font-weight:800;color:rgba(255,255,255,.8);}
+.closing-author-role{font-family:monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.33);margin-top:5px;}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="counter">01 / 10</div>
+<div id="nav-hint">↑ ↓ · Espacio para avanzar</div>
+
+<!-- PORTADA -->
+<div class="cover" data-slide="1">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="cover-inner">
+    <div class="live-badge">mhGAP OPS/OMS v2.0 · MINSA Perú 2024 · CIE-10 F40–F43</div>
+    <div class="cover-title">ANSIE<span class="accent">DAD</span></div>
+    <div class="cover-sub">Reconocimiento, tamizaje y manejo inicial desde el primer nivel de atención en el Perú</div>
+    <div class="cover-tags">
+      <span class="tag">Personal de salud</span>
+      <span class="tag">20 min</span>
+      <span class="tag">GAD-7 · GAD-2</span>
+      <span class="tag">CIE-10 F40–F43</span>
+    </div>
+    <div class="cover-author">
+      <div class="author-name">Henry Sánchez Rueda</div>
+      <div class="author-role">Médico Psiquiatra · CSMC Allin Kawsay</div>
+    </div>
+  </div>
+</div>
+
+<!-- 01 MAGNITUD -->
+<div class="slide" data-slide="2">
+  <div class="slide-num reveal">01 — El Problema</div>
+  <h2 class="reveal d1">La ansiedad es el <em>primer diagnóstico</em> de salud mental en el Perú — y nadie la pregunta</h2>
+  <p class="lead reveal d2">433,816 casos registrados en 2022 (MINSA). El 73% de casos en Latinoamérica no recibe tratamiento. La mayoría están en el primer nivel esperando que alguien pregunte.</p>
+  <div class="stat-grid">
+    <div class="stat-card reveal d1"><div class="stat-num">1°</div><div class="stat-label">Diagnóstico de salud mental más frecuente en Perú — 433,816 casos en 2022 (MINSA)</div></div>
+    <div class="stat-card orange reveal d2"><div class="stat-num">73%</div><div class="stat-label">De casos con ansiedad en Latinoamérica no recibe tratamiento alguno</div></div>
+    <div class="stat-card amber reveal d3"><div class="stat-num">34%</div><div class="stat-label">De adultos tendrá un trastorno ansioso a lo largo de su vida (prevalencia lifetime)</div></div>
+    <div class="stat-card rose reveal d4"><div class="stat-num">2–3×</div><div class="stat-label">Más frecuente en mujeres y adultos mayores con comorbilidad crónica</div></div>
+  </div>
+  <div class="info-box orange reveal d5">
+    <strong>Comorbilidad crítica:</strong> Ansiedad + depresión es el patrón más frecuente y de peor pronóstico. Si detectas uno, busca activamente el otro.
+  </div>
+</div>
+
+<!-- 02 NEUROBIOLOGÍA -->
+<div class="slide" data-slide="3">
+  <div class="slide-num reveal">02 — Neurobiología</div>
+  <h2 class="reveal d1">Por qué el paciente ansioso <em>no puede "calmarse"</em> con voluntad</h2>
+  <p class="lead reveal d2">La ansiedad es desregulación del circuito <strong>amígdala–corteza prefrontal</strong>. El freno falla. El paciente no exagera — su cerebro está en alarma genuina.</p>
+
+  <div class="loop-box reveal d2">
+    <h3>El loop que lo mantiene atrapado</h3>
+    <div class="loop-steps">
+      <div class="loop-item">Amenaza percibida</div><div class="loop-arrow">→</div>
+      <div class="loop-item">Amígdala dispara</div><div class="loop-arrow">→</div>
+      <div class="loop-item">Síntomas físicos</div><div class="loop-arrow">→</div>
+      <div class="loop-item">Interpretación catastrófica</div><div class="loop-arrow">→</div>
+      <div class="loop-item">↑ Ansiedad</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="col-card reveal d3">
+      <h3>Tres sistemas involucrados</h3>
+      <ul>
+        <li><strong>Noradrenérgico</strong> (locus coeruleus): hiperactivación autonómica — taquicardia, sudor, disnea, temblor</li>
+        <li><strong>Serotoninérgico</strong> (rafe dorsal): regula umbral de amenaza — por eso los ISRS funcionan</li>
+        <li><strong>GABA-érgico:</strong> inhibición del miedo — las BZD actúan aquí pero generan dependencia</li>
+      </ul>
+    </div>
+    <div class="col-card reveal d4">
+      <h3>Implicación clínica directa</h3>
+      <ul>
+        <li>"Tranquílese" <strong>no rompe el loop</strong> — solo la psicoeducación + TCC lo hace</li>
+        <li>Las BZD suprimen síntomas sin modificar el circuito → efecto rebote al suspender</li>
+        <li>Los ISRS modifican el umbral amigdalino con uso crónico (4–6 semanas)</li>
+        <li>El ejercicio aeróbico reduce la actividad basal de la amígdala</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 03 SÍNTOMAS ENCUBIERTOS -->
+<div class="slide" data-slide="4">
+  <div class="slide-num reveal">03 — Presentación Clínica</div>
+  <h2 class="reveal d1">El paciente ansioso que <em>no dice "estoy nervioso"</em></h2>
+  <p class="lead reveal d2">Consulta por síntomas físicos. Regla: consultas repetidas sin causa orgánica clara → piensa en ansiedad.</p>
+  <div class="sym-grid">
+    <div class="sym-card reveal d1"><span class="sym-icon">💓</span><div class="sym-name">Palpitaciones</div><div class="sym-desc">Taquicardia episódica. EKG normal repetido.</div></div>
+    <div class="sym-card reveal d2"><span class="sym-icon">😮‍💨</span><div class="sym-name">Disnea / ahogo</div><div class="sym-desc">Sensación de no poder respirar sin patología pulmonar</div></div>
+    <div class="sym-card reveal d3"><span class="sym-icon">🤢</span><div class="sym-name">Náuseas / diarrea</div><div class="sym-desc">Síntomas GI funcionales sin causa orgánica</div></div>
+    <div class="sym-card reveal d4"><span class="sym-icon">😰</span><div class="sym-name">Sudoración / temblor</div><div class="sym-desc">Hiperactivación autonómica episódica o crónica</div></div>
+    <div class="sym-card reveal d5"><span class="sym-icon">😵</span><div class="sym-name">Cefalea tensional</div><div class="sym-desc">Tensión muscular crónica, nucal y temporal</div></div>
+    <div class="sym-card reveal d6"><span class="sym-icon">🛌</span><div class="sym-name">Insomnio de conciliación</div><div class="sym-desc">Mente que "no para" al acostarse</div></div>
+  </div>
+  <div class="info-box reveal" style="transition-delay:.7s"><strong>Regla práctica:</strong> Consultas repetidas sin causa orgánica → aplica el GAD-7. Dos minutos que cambian el manejo.</div>
+</div>
+
+<!-- 04 CASO CLÍNICO -->
+<div class="slide" data-slide="5">
+  <div class="slide-num reveal">04 — Caso Clínico</div>
+  <h2 class="reveal d1">Carlos, 38 años — <em>"Vengo por el corazón"</em></h2>
+  <div class="case-grid">
+    <div class="case-card reveal d1">
+      <div class="case-name">Carlos M.</div>
+      <div class="case-meta">38 años · Comerciante · 3ra consulta este mes</div>
+      <div class="case-label">Motivo de consulta</div>
+      <p class="case-quote">"Vengo otra vez por el corazón. Siento que me va a dar un infarto. El cardiólogo dijo que estoy bien pero no me creo."</p>
+      <div class="case-label">Antecedentes</div>
+      <p class="case-text">EKG normal x2. Ecocardiograma normal. Trabaja 12h/día. Duerme mal, le cuesta concentrarse, se irrita fácil.</p>
+      <div class="case-label">Lo que nadie exploró</div>
+      <p class="case-text">Le preocupa "todo" desde hace 8 meses. Dejó el gimnasio. Nadie le preguntó por su estado emocional en las 3 consultas.</p>
+    </div>
+    <div class="case-card reveal d2">
+      <div class="case-label">¿Qué pensarías?</div>
+      <ul style="margin-top:10px">
+        <li>¿Solo es hipocondría?</li>
+        <li>¿Cuánto tiempo lleva así y qué lo desencadenó?</li>
+        <li>¿Alguien exploró síntomas psicológicos además de los cardíacos?</li>
+        <li>¿Aplicarías el GAD-7 hoy?</li>
+      </ul>
+      <div class="sep"></div>
+      <div class="case-label">Resultado GAD-7</div>
+      <div class="result-pill">13 pts → Ansiedad Moderada (TAG F41.1)</div>
+      <div class="info-box" style="margin-top:16px;font-size:.82rem">El ciclo cardiólogo → EKG normal → más ansiedad perpetúa el loop sin resolverlo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 05 TRASTORNOS -->
+<div class="slide" data-slide="6">
+  <div class="slide-num reveal">05 — Diagnóstico CIE-10</div>
+  <h2 class="reveal d1">Trastornos de ansiedad que <em>verás en primer nivel</em></h2>
+  <p class="lead reveal d2">El denominador común: síntomas persistentes que causan malestar significativo o deterioro funcional.</p>
+  <div class="disorder-grid">
+    <div class="disorder-card reveal d1">
+      <div class="disorder-code">F41.1 · TAG</div>
+      <div class="disorder-name">Trastorno de Ansiedad Generalizada</div>
+      <div class="disorder-desc">Preocupación excesiva y difícil de controlar ≥6 meses + ≥3 síntomas: tensión muscular, fatiga, concentración, irritabilidad, insomnio</div>
+    </div>
+    <div class="disorder-card orange reveal d2">
+      <div class="disorder-code">F40.1 · Fobia Social</div>
+      <div class="disorder-name">Trastorno de Ansiedad Social</div>
+      <div class="disorder-desc">Miedo marcado a situaciones sociales por temor al juicio ajeno. Evitación activa que interfiere con vida laboral o social</div>
+    </div>
+    <div class="disorder-card amber reveal d3">
+      <div class="disorder-code">F41.0 · T. Pánico</div>
+      <div class="disorder-name">Trastorno de Pánico</div>
+      <div class="disorder-desc">Crisis recurrentes e inesperadas: miedo intensísimo + síntomas autonómicos (disnea, palpitaciones, sensación de muerte) + preocupación anticipatoria</div>
+    </div>
+    <div class="disorder-card rose reveal d4">
+      <div class="disorder-code">F43.1 · TEPT</div>
+      <div class="disorder-name">Trastorno de Estrés Postraumático</div>
+      <div class="disorder-desc">Tras evento traumático: re-experimentación, evitación, hiperactivación. >1 mes. Frecuente en víctimas de violencia, desastres, parto traumático</div>
+    </div>
+  </div>
+  <div class="info-box amber reveal d5">
+    <strong>Diagnóstico diferencial obligatorio:</strong> Hipertiroidismo, hipoglucemia, arritmias, abstinencia de alcohol o BZD. Solicitar TSH en todo paciente con síntomas ansiosos nuevos.
+  </div>
+</div>
+
+<!-- 06 GAD-7 -->
+<div class="slide" data-slide="7">
+  <div class="slide-num reveal">06 — Tamizaje</div>
+  <h2 class="reveal d1"><em>GAD-7</em> y <em>GAD-2</em> — tamizaje, no diagnóstico</h2>
+  <p class="lead reveal d2">El GAD-7 cuantifica severidad. El GAD-2 es el pre-filtro para consultas de menos de 10 minutos.</p>
+  <div class="two-col">
+    <div class="col-card reveal d2">
+      <h3>GAD-7 · Adultos · ~2 minutos</h3>
+      <ul style="margin-bottom:14px">
+        <li>7 ítems, escala 0–3 por ítem</li>
+        <li>Puntaje máximo: 21 puntos</li>
+        <li><strong>Corte ≥5</strong> = posible caso · Sensibilidad 89% / Especificidad 82%</li>
+      </ul>
+      <div class="table-wrap" style="margin-top:0">
+        <table>
+          <thead><tr><th>Puntaje</th><th>Interpretación</th></tr></thead>
+          <tbody>
+            <tr><td>0–4</td><td>Mínima / sin ansiedad</td></tr>
+            <tr><td>5–9</td><td>Leve</td></tr>
+            <tr><td>10–14</td><td>Moderada</td></tr>
+            <tr><td>15–21</td><td>Severa</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-card reveal d3">
+      <h3>GAD-2 · Pre-tamizaje ultrarrápido</h3>
+      <p style="font-size:.875rem;color:var(--slate);margin-bottom:14px">Solo 2 preguntas (ítems 1 y 2 del GAD-7):</p>
+      <div class="info-box" style="margin-top:0;font-size:.85rem;font-style:italic">"¿Se ha sentido nervioso/a, ansioso/a o muy alterado/a?"</div>
+      <div class="info-box" style="margin-top:8px;font-size:.85rem;font-style:italic">"¿No ha podido dejar de preocuparse o controlar su preocupación?"</div>
+      <ul style="margin-top:14px">
+        <li><strong>Puntaje ≥3:</strong> aplicar GAD-7 completo</li>
+        <li>Sensibilidad 86% para TAG con solo 2 preguntas</li>
+        <li>Ideal cuando el tiempo de consulta es escaso</li>
+      </ul>
+    </div>
+  </div>
+  <div class="info-box amber reveal d4">
+    <strong>Advertencia:</strong> El GAD-7 tamiza — NO diagnostica. Score alto con síntomas físicos prominentes: primero descartar causa orgánica (TSH, glucosa, EKG).
+  </div>
+</div>
+
+<!-- 07 TRATAMIENTO -->
+<div class="slide" data-slide="8">
+  <div class="slide-num reveal">07 — Tratamiento</div>
+  <h2 class="reveal d1">Manejo <em>según severidad</em> — escalonado desde APS</h2>
+  <div class="two-col">
+    <div class="col-card reveal d2">
+      <h3>ISRS — Primera Línea</h3>
+      <div class="table-wrap" style="margin-top:12px">
+        <table>
+          <thead><tr><th>Fármaco</th><th>Rango diario</th><th>Inicio</th></tr></thead>
+          <tbody>
+            <tr><td>Sertralina</td><td>50–200 mg</td><td>25 mg × 7d</td></tr>
+            <tr><td>Fluoxetina</td><td>20–60 mg</td><td>10 mg × 7d</td></tr>
+            <tr><td>Escitalopram</td><td>10–20 mg</td><td>5 mg × 7d</td></tr>
+            <tr><td>Venlafaxina</td><td>75–225 mg</td><td>37.5 mg × 7d</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-card reveal d3">
+      <h3>Lo que NO hacer en primer nivel</h3>
+      <ul>
+        <li><strong>No BZD crónicas</strong> — tolerancia, dependencia, peor pronóstico a largo plazo</li>
+        <li><strong>No BZD más de 2–4 semanas</strong> — solo crisis agudas puntuales</li>
+        <li><strong>No cambiar ISRS antes de 4–6 semanas</strong> — el efecto tarda</li>
+        <li><strong>Advertir siempre:</strong> los ISRS pueden aumentar la ansiedad las primeras 1–2 semanas — si no se avisa, el paciente abandona</li>
+      </ul>
+    </div>
+  </div>
+  <div class="table-wrap reveal d4">
+    <table>
+      <thead><tr><th>GAD-7</th><th>Severidad</th><th>Primera intervención</th><th>¿Referir?</th></tr></thead>
+      <tbody>
+        <tr><td>5–9</td><td>Leve</td><td>Psicoeducación + relajación + actividad física. Control 4 sem.</td><td>No necesaria</td></tr>
+        <tr><td>10–14</td><td>Moderada</td><td>Lo anterior + TCC + considerar ISRS</td><td>CSMC si sin respuesta 4–8 sem</td></tr>
+        <tr><td>≥15</td><td>Severa</td><td>ISRS + TCC + interconsulta salud mental</td><td>Referencia a psiquiatría</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 08 PSICOTERAPIA -->
+<div class="slide" data-slide="9">
+  <div class="slide-num reveal">08 — Psicoterapia en APS</div>
+  <h2 class="reveal d1">Técnicas que puedes <em>ofrecer sin derivación</em> especializada</h2>
+  <div class="two-col">
+    <div class="col-card reveal d2">
+      <h3>TCC — Técnicas aplicables en primer nivel</h3>
+      <ul>
+        <li><strong>Psicoeducación del loop:</strong> explicar amígdala–síntomas–catastrofización. El paciente que entiende el mecanismo pierde el miedo al miedo</li>
+        <li><strong>Respiración 4–7–8:</strong> inhala 4s, sostén 7s, exhala 8s. Activa el vago, frena el simpático</li>
+        <li><strong>Relajación muscular progresiva:</strong> tensión/relajación secuencial (Jacobson)</li>
+        <li><strong>Reestructuración cognitiva:</strong> "¿Cuál es la evidencia de que va a pasar lo peor?"</li>
+        <li><strong>Activación conductual:</strong> retomar gradualmente actividades evitadas</li>
+        <li><strong>Ejercicio aeróbico:</strong> 30 min × 3/semana — reduce actividad basal de la amígdala</li>
+      </ul>
+    </div>
+    <div class="col-card reveal d3">
+      <h3>Para el trastorno de pánico</h3>
+      <ul style="margin-bottom:16px">
+        <li><strong>Psicoeducación de la crisis:</strong> el pánico no mata — la sensación de muerte es una ilusión neurobiológica</li>
+        <li><strong>Técnica del semáforo:</strong> rojo (crisis) → naranja (respirar + relajar) → verde (recuperación)</li>
+        <li><strong>Exposición interoceptiva:</strong> provocar deliberadamente síntomas leves para desensibilizarlos</li>
+      </ul>
+      <div class="info-box" style="font-size:.85rem">
+        <strong>Referir si:</strong> Sin respuesta 4–8 sem · GAD-7 ≥15 persistente · TEPT grave · Abuso de sustancias comórbido · Ideación suicida activa
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CIERRE -->
+<div class="closing" data-slide="10">
+  <div class="closing-quote reveal">Si el paciente <em>consulta repetido</em> sin causa orgánica — pregunta cómo se siente por dentro</div>
+  <div class="closing-sub reveal d1">Y aplica el GAD-7. Con ≥10: ISRS + psicoterapia + referencia. BZD solo a corto plazo.</div>
+  <div class="pills reveal d2">
+    <span class="pill">GAD-7 para tamizar</span>
+    <span class="pill">GAD-2 ultrarrápido</span>
+    <span class="pill">ISRS primera línea</span>
+    <span class="pill">No BZD crónicas</span>
+    <span class="pill">TCC en APS</span>
+  </div>
+  <div class="closing-author reveal d3">
+    <div class="closing-author-name">Henry Sánchez Rueda</div>
+    <div class="closing-author-role">Médico Psiquiatra · CSMC Allin Kawsay · mhGAP OPS v2.0 · MINSA Perú 2024</div>
+  </div>
+</div>
+
+<script>
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal,.reveal-left').forEach(el=>obs.observe(el));
+
+const slides=document.querySelectorAll('[data-slide]');
+const prog=document.getElementById('progress');
+const ctr=document.getElementById('counter');
+const total=slides.length;
+
+function getCur(){let c=0,m=Infinity;slides.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<m){m=d;c=i;}});return c;}
+function upd(){const i=getCur();prog.style.width=(i/(total-1)*100)+'%';ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');}
+window.addEventListener('scroll',upd,{passive:true});
+function go(i){if(i>=0&&i<total)slides[i].scrollIntoView({behavior:'smooth'});}
+document.addEventListener('keydown',e=>{
+  const c=getCur();
+  if(e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(c+1);}
+  else if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();go(c-1);}
+  else if(e.key==='Home')go(0);
+  else if(e.key==='End')go(total-1);
+});
+setTimeout(()=>{document.getElementById('nav-hint').style.opacity='0';},5000);
+upd();
+</script>
+</body>
+</html>

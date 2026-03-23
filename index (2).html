@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Depresión — Primer Nivel · Henry Sánchez Rueda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F7F2;
+  --white: #FFFFFF;
+  --teal: #00C49A;
+  --teal-dark: #007A62;
+  --teal-light: #D6F5EE;
+  --coral: #FF5252;
+  --coral-light: #FFEAEA;
+  --amber: #FFB300;
+  --amber-light: #FFF8DC;
+  --navy: #0B1F2E;
+  --slate: #3D5A6C;
+  --muted: #8AA3B1;
+  --border: #DDE8E3;
+  --text: #152535;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;overflow-x:hidden;}
+
+/* PROGRESS */
+#progress{position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,var(--teal),var(--coral),var(--amber));z-index:200;transition:width .25s ease;border-radius:0 3px 3px 0;}
+
+/* COUNTER */
+#counter{position:fixed;top:16px;right:20px;font-family:monospace;font-size:11px;color:var(--muted);z-index:200;background:rgba(255,255,255,.92);padding:4px 10px;border-radius:20px;border:1px solid var(--border);letter-spacing:.1em;}
+
+/* NAV HINT */
+#nav-hint{position:fixed;bottom:18px;right:20px;font-size:11px;color:var(--muted);font-family:monospace;z-index:200;background:rgba(255,255,255,.92);padding:5px 12px;border-radius:20px;border:1px solid var(--border);transition:opacity 1s;}
+
+/* REVEAL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-30px);transition:opacity .6s ease,transform .6s ease;}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-scale{opacity:0;transform:scale(.9);transition:opacity .55s ease,transform .55s ease;}
+.reveal-scale.visible{opacity:1;transform:scale(1);}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}.d6{transition-delay:.6s}
+
+/* COVER */
+.cover{min-height:100vh;background:var(--navy);display:flex;align-items:center;padding:80px 64px;position:relative;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;}
+.b1{width:550px;height:550px;background:rgba(0,196,154,.22);top:-120px;right:-120px;}
+.b2{width:380px;height:380px;background:rgba(255,82,82,.14);bottom:-60px;left:180px;}
+.b3{width:300px;height:300px;background:rgba(255,179,0,.12);bottom:80px;right:180px;}
+.cover-inner{position:relative;z-index:1;max-width:820px;}
+.live-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,196,154,.15);border:1px solid rgba(0,196,154,.3);color:var(--teal);font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:6px 14px;border-radius:20px;font-family:monospace;margin-bottom:28px;}
+.live-badge::before{content:'';width:7px;height:7px;background:var(--teal);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.5);}}
+.cover-title{font-family:'Syne',sans-serif;font-size:clamp(5rem,13vw,11rem);font-weight:800;line-height:.86;letter-spacing:-.045em;color:#fff;margin-bottom:16px;}
+.cover-title .accent{color:var(--teal);}
+.cover-sub{font-size:1.1rem;color:rgba(255,255,255,.5);max-width:46ch;line-height:1.7;margin-bottom:36px;}
+.cover-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
+.tag{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:5px 12px;border-radius:4px;font-family:monospace;}
+.cover-author{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;}
+.author-name{font-family:'Cabinet Grotesk',sans-serif;font-size:1.1rem;font-weight:800;color:#fff;}
+.author-role{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:5px;font-family:monospace;}
+
+/* SLIDE */
+.slide{min-height:100vh;padding:80px 64px;display:flex;flex-direction:column;justify-content:center;max-width:1120px;margin:0 auto;border-bottom:1px solid var(--border);position:relative;}
+.slide-num{font-family:monospace;font-size:11px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;}
+h2{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.9rem);font-weight:800;line-height:1.1;letter-spacing:-.025em;color:var(--navy);margin-bottom:16px;}
+h2 em{color:var(--teal);font-style:normal;}
+.lead{font-size:1.02rem;color:var(--slate);line-height:1.75;max-width:70ch;}
+h3{font-family:'Cabinet Grotesk',sans-serif;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);margin-bottom:12px;}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:14px;margin-top:30px;}
+.stat-card{background:var(--white);border-radius:18px;padding:26px 22px;border:1px solid var(--border);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;cursor:default;}
+.stat-card:hover{transform:translateY(-6px);box-shadow:0 18px 44px rgba(0,0,0,.09);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;border-radius:18px 18px 0 0;background:var(--teal);}
+.stat-card.coral::before{background:var(--coral);}
+.stat-card.amber::before{background:var(--amber);}
+.stat-card.navy::before{background:var(--navy);}
+.stat-num{font-family:'Syne',sans-serif;font-size:3.4rem;font-weight:800;line-height:1;color:var(--teal);margin-bottom:10px;letter-spacing:-.03em;}
+.stat-card.coral .stat-num{color:var(--coral);}
+.stat-card.amber .stat-num{color:var(--amber);}
+.stat-card.navy .stat-num{color:var(--navy);}
+.stat-label{font-size:.87rem;color:var(--slate);line-height:1.5;}
+
+/* INFO BOX */
+.info-box{background:var(--teal-light);border-left:4px solid var(--teal);padding:16px 20px;border-radius:0 12px 12px 0;margin-top:22px;font-size:.9rem;color:var(--teal-dark);line-height:1.65;max-width:78ch;}
+.info-box.coral{background:var(--coral-light);border-left-color:var(--coral);color:#9B2020;}
+.info-box.amber{background:var(--amber-light);border-left-color:var(--amber);color:#6B4A00;}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+.col-card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:24px;transition:transform .25s,box-shadow .25s;}
+.col-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.07);}
+
+/* LISTS */
+ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
+li{color:var(--slate);font-size:.915rem;padding-left:18px;position:relative;line-height:1.65;}
+li::before{content:'▸';position:absolute;left:0;color:var(--teal);font-size:.75rem;top:4px;}
+li strong{color:var(--navy);font-weight:600;}
+
+/* TABLE */
+.table-wrap{background:var(--white);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-top:26px;}
+table{width:100%;border-collapse:collapse;font-size:.875rem;}
+thead{background:var(--navy);}
+thead th{padding:12px 16px;text-align:left;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);font-weight:500;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--teal-light);}
+tbody td{padding:11px 16px;color:var(--slate);vertical-align:top;line-height:1.55;}
+tbody td:first-child{color:var(--navy);font-weight:600;}
+
+/* SYMPTOM GRID */
+.sym-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-top:26px;}
+.sym-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;text-align:center;transition:transform .25s,box-shadow .25s,border-color .25s;cursor:default;}
+.sym-card:hover{transform:translateY(-6px) rotate(-1.5deg);box-shadow:0 16px 36px rgba(0,196,154,.16);border-color:var(--teal);}
+.sym-icon{font-size:2.2rem;display:block;margin-bottom:10px;}
+.sym-name{font-weight:700;font-size:.875rem;color:var(--navy);margin-bottom:4px;}
+.sym-desc{font-size:.775rem;color:var(--muted);line-height:1.5;}
+
+/* CASE */
+.case-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:26px;}
+@media(max-width:720px){.case-grid{grid-template-columns:1fr;}}
+.case-card{background:var(--white);border-radius:18px;border:1px solid var(--border);padding:26px;}
+.case-name{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--navy);margin-bottom:3px;}
+.case-meta{font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
+.case-label{font-family:monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-top:14px;margin-bottom:5px;font-weight:600;}
+.case-text{font-size:.895rem;color:var(--slate);line-height:1.65;}
+.case-quote{font-style:italic;color:var(--navy);border-left:3px solid var(--teal);padding-left:14px;font-size:.9rem;line-height:1.7;}
+.result-pill{display:inline-block;background:var(--coral-light);border:1.5px solid var(--coral);color:var(--coral);padding:9px 16px;border-radius:8px;font-family:monospace;font-size:.83rem;margin-top:18px;font-weight:600;}
+.sep{width:32px;height:3px;background:var(--teal);border-radius:2px;margin:16px 0;}
+
+/* FLOW */
+.flow{display:flex;flex-direction:column;gap:0;margin-top:30px;max-width:580px;}
+.flow-step{display:flex;gap:18px;position:relative;}
+.flow-step:not(:last-child)::after{content:'';position:absolute;left:22px;top:48px;width:2px;height:calc(100% - 12px);background:linear-gradient(to bottom,var(--teal),var(--border));}
+.flow-dot{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dark));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0;margin-top:2px;box-shadow:0 5px 16px rgba(0,196,154,.38);}
+.flow-body{padding:8px 0 28px;}
+.flow-title{font-weight:700;color:var(--navy);margin-bottom:4px;font-size:.97rem;}
+.flow-desc{font-size:.875rem;color:var(--slate);line-height:1.6;}
+
+/* CLOSING */
+.closing{min-height:100vh;background:var(--navy);display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 64px;flex-direction:column;position:relative;overflow:hidden;}
+.closing::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(0,196,154,.16) 0%,transparent 65%);}
+.closing-quote{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:800;line-height:1.12;letter-spacing:-.025em;color:#fff;max-width:24ch;margin-bottom:22px;position:relative;z-index:1;}
+.closing-quote em{color:var(--teal);font-style:normal;}
+.closing-sub{font-size:1rem;color:rgba(255,255,255,.48);max-width:44ch;margin:0 auto 36px;line-height:1.7;position:relative;z-index:1;}
+.pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;}
+.pill{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.75);padding:9px 18px;border-radius:30px;font-family:monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,border-color .2s,color .2s;cursor:default;}
+.pill:hover{background:rgba(0,196,154,.2);border-color:rgba(0,196,154,.5);color:var(--teal);}
+.closing-author{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;margin-top:40px;position:relative;z-index:1;}
+.closing-author-name{font-family:'Cabinet Grotesk',sans-serif;font-size:1rem;font-weight:800;color:rgba(255,255,255,.8);}
+.closing-author-role{font-family:monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.33);margin-top:5px;}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="counter">01 / 10</div>
+<div id="nav-hint">↑ ↓ · Espacio para avanzar</div>
+
+<!-- PORTADA -->
+<div class="cover" data-slide="1">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="cover-inner">
+    <div class="live-badge">GPC MINSA 2023 · RM N° 136-2023</div>
+    <div class="cover-title">DEPRE<span class="accent">SIÓN</span></div>
+    <div class="cover-sub">Tamizaje, diagnóstico y tratamiento desde el primer nivel de atención en el Perú</div>
+    <div class="cover-tags">
+      <span class="tag">Personal de salud</span>
+      <span class="tag">20 min</span>
+      <span class="tag">PHQ-9 · GDS-15</span>
+      <span class="tag">CIE-10 F32</span>
+    </div>
+    <div class="cover-author">
+      <div class="author-name">Henry Sánchez Rueda</div>
+      <div class="author-role">Médico Psiquiatra · CSMC Allin Kawsay</div>
+    </div>
+  </div>
+</div>
+
+<!-- 01 MAGNITUD -->
+<div class="slide" data-slide="2">
+  <div class="slide-num reveal">01 — El Problema</div>
+  <h2 class="reveal d1">La depresión genera <em>más discapacidad</em> que cualquier otra enfermedad mental en el Perú</h2>
+  <p class="lead reveal d2">Según el CDC Perú 2016: depresión unipolar ocupa el 1er lugar de años de vida perdidos por discapacidad — 6'668,144 AVD, el 12.7% del total nacional.</p>
+  <div class="stat-grid">
+    <div class="stat-card reveal d1"><div class="stat-num">1°</div><div class="stat-label">Causa de AVD por trastornos mentales en Perú — por encima de ansiedad y esquizofrenia</div></div>
+    <div class="stat-card amber reveal d2"><div class="stat-num">2–3×</div><div class="stat-label">Mayor riesgo de depresión en pacientes con diabetes tipo 2 (GPC MINSA 2023)</div></div>
+    <div class="stat-card coral reveal d3"><div class="stat-num">22%</div><div class="stat-label">De pacientes con tuberculosis tiene trastorno mental comórbido no tratado</div></div>
+    <div class="stat-card navy reveal d4"><div class="stat-num">25%</div><div class="stat-label">De cardíacos presenta depresión — la mitad sin diagnóstico registrado</div></div>
+  </div>
+  <div class="info-box amber reveal d5">
+    <strong>Sin tratamiento</strong>, la depresión se cronifica y su severidad aumenta en al menos 2 años de seguimiento. La detección precoz cambia el pronóstico.
+  </div>
+</div>
+
+<!-- 02 SÍNTOMAS ENCUBIERTOS -->
+<div class="slide" data-slide="3">
+  <div class="slide-num reveal">02 — Presentación Clínica</div>
+  <h2 class="reveal d1">El paciente que <em>no dice "estoy triste"</em></h2>
+  <p class="lead reveal d2">En primer nivel, la depresión llega disfrazada. Si esperas que verbalice tristeza, lo perderás.</p>
+  <div class="sym-grid">
+    <div class="sym-card reveal d1"><span class="sym-icon">🤕</span><div class="sym-name">Cefalea crónica</div><div class="sym-desc">Sin causa orgánica, recurrente, tensional</div></div>
+    <div class="sym-card reveal d2"><span class="sym-icon">😴</span><div class="sym-name">Insomnio / hipersomnia</div><div class="sym-desc">Alteración de cantidad y calidad de sueño</div></div>
+    <div class="sym-card reveal d3"><span class="sym-icon">⚡</span><div class="sym-name">"Cansancio sin motivo"</div><div class="sym-desc">Fatiga injustificada, peor por las mañanas</div></div>
+    <div class="sym-card reveal d4"><span class="sym-icon">🍽️</span><div class="sym-name">Cambios en apetito</div><div class="sym-desc">Disminución o aumento marcado sin causa</div></div>
+    <div class="sym-card reveal d5"><span class="sym-icon">💊</span><div class="sym-name">Consultas frecuentes</div><div class="sym-desc">El paciente que "no mejora" aunque el lab sea normal</div></div>
+    <div class="sym-card reveal d6"><span class="sym-icon">🦴</span><div class="sym-name">Dolores somáticos</div><div class="sym-desc">Osteomusculares, GI, precordial sin correlato</div></div>
+  </div>
+  <div class="info-box reveal" style="transition-delay:.7s"><strong>Regla práctica:</strong> Si el paciente crónico no mejora — aplica el PHQ-9 hoy.</div>
+</div>
+
+<!-- 03 CASO CLÍNICO -->
+<div class="slide" data-slide="4">
+  <div class="slide-num reveal">03 — Caso Clínico</div>
+  <h2 class="reveal d1">María, 46 años — <em>Diabética con mal control</em></h2>
+  <div class="case-grid">
+    <div class="case-card reveal d1">
+      <div class="case-name">María C.</div>
+      <div class="case-meta">46 años · Diabetes tipo 2 · 4ta consulta este trimestre</div>
+      <div class="case-label">Motivo de consulta</div>
+      <p class="case-quote">"Doctor, vengo cada mes pero no mejoro. Tengo mucho sueño, no tengo ganas de nada, me duele la cabeza siempre."</p>
+      <div class="case-label">Hallazgos</div>
+      <p class="case-text">HbA1c 8.9% (mal control), peso estable, examen neurológico normal. No duerme bien desde hace 3 meses. Ya no sale con sus hijos.</p>
+      <div class="case-label">Lo que nadie preguntó</div>
+      <p class="case-text">Nadie exploró el ánimo, la anhedonia ni la ideación suicida en las 4 consultas previas.</p>
+    </div>
+    <div class="case-card reveal d2">
+      <div class="case-label">¿Qué pensarías?</div>
+      <ul style="margin-top:10px">
+        <li>¿Solo es mal control glucémico?</li>
+        <li>¿Sus síntomas son físicos o hay algo más?</li>
+        <li>¿Cuándo fue la última vez que alguien le preguntó cómo se sentía por dentro?</li>
+        <li>¿Aplicarías el PHQ-9 hoy?</li>
+      </ul>
+      <div class="sep"></div>
+      <div class="case-label">Resultado PHQ-9</div>
+      <div class="result-pill">14 pts → Depresión Moderada (F32.1)</div>
+      <div class="info-box" style="margin-top:16px;font-size:.82rem">El mal control glucémico en depresión no tratada no se resuelve solo optimizando la metformina.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 CRITERIOS -->
+<div class="slide" data-slide="5">
+  <div class="slide-num reveal">04 — Diagnóstico CIE-10</div>
+  <h2 class="reveal d1">Criterios <em>F32</em> — 2 semanas mínimo, sin episodios maníacos</h2>
+  <div class="two-col">
+    <div class="col-card reveal d2">
+      <h3>Síntomas B — Cardinales (≥2 de 3)</h3>
+      <ul>
+        <li><strong>Humor depresivo</strong> — tristeza anormal, casi cada día, poco influida por circunstancias</li>
+        <li><strong>Anhedonia</strong> — pérdida de interés o incapacidad de disfrutar actividades</li>
+        <li><strong>Fatiga / ↓ energía</strong> — cansancio injustificado, peor por la mañana</li>
+      </ul>
+    </div>
+    <div class="col-card reveal d3">
+      <h3>Síntomas C — Adicionales</h3>
+      <ul>
+        <li>Pérdida de confianza o autoestima</li>
+        <li>Ideas de culpa o inutilidad</li>
+        <li><strong>Ideas de muerte o suicidio</strong></li>
+        <li>Dificultad para concentrarse</li>
+        <li>Agitación o enlentecimiento psicomotor</li>
+        <li>Alteraciones del sueño · Cambios en apetito/peso</li>
+      </ul>
+    </div>
+  </div>
+  <div class="table-wrap reveal d4">
+    <table>
+      <thead><tr><th>Subcategoría</th><th>B requeridos</th><th>Total síntomas</th><th>Criterios D</th></tr></thead>
+      <tbody>
+        <tr><td>Leve F32.0</td><td>≥2 de 3</td><td>≥4</td><td>Ausentes</td></tr>
+        <tr><td>Moderada F32.1</td><td>≥2 de 3</td><td>≥6</td><td>Ausentes</td></tr>
+        <tr><td>Grave sin psicosis F32.2</td><td>3 de 3</td><td>≥8</td><td>Ausentes</td></tr>
+        <tr><td>Grave con psicosis F32.3</td><td>3 de 3</td><td>≥8</td><td>Presentes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 05 PHQ-9 -->
+<div class="slide" data-slide="6">
+  <div class="slide-num reveal">05 — Tamizaje</div>
+  <h2 class="reveal d1"><em>PHQ-9</em> y <em>GDS-15</em> — tamizaje, no diagnóstico</h2>
+  <p class="lead reveal d2">Un puntaje positivo indica referir para evaluación integral. Son el disparador de la acción.</p>
+  <div class="two-col">
+    <div class="col-card reveal d2">
+      <h3>PHQ-9 · Adultos 18–59 años</h3>
+      <ul style="margin-bottom:14px">
+        <li>9 ítems autoadministrados, ~2 minutos</li>
+        <li>Puntaje máximo: 27 puntos</li>
+        <li><strong>Corte ≥5</strong> = caso positivo</li>
+      </ul>
+      <div class="table-wrap" style="margin-top:0">
+        <table>
+          <thead><tr><th>Puntaje</th><th>Interpretación</th></tr></thead>
+          <tbody>
+            <tr><td>0–4</td><td>Mínimo / ninguno</td></tr>
+            <tr><td>5–9</td><td>Leve</td></tr>
+            <tr><td>10–14</td><td>Moderado</td></tr>
+            <tr><td>15–19</td><td>Moderadamente severo</td></tr>
+            <tr><td>20–27</td><td>Severo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-card reveal d3">
+      <h3>GDS-15 · Adultos ≥60 años</h3>
+      <ul style="margin-bottom:14px">
+        <li>15 ítems dicotómicos (Sí/No), ~5 min</li>
+        <li>Excluye síntomas somáticos intencionalmente</li>
+        <li><strong>Corte ≥5</strong> = caso positivo</li>
+      </ul>
+      <div class="table-wrap" style="margin-top:0">
+        <table>
+          <thead><tr><th>Puntaje</th><th>Interpretación</th></tr></thead>
+          <tbody>
+            <tr><td>0–4</td><td>Normal</td></tr>
+            <tr><td>5–8</td><td>Depresión leve</td></tr>
+            <tr><td>9–11</td><td>Depresión moderada</td></tr>
+            <tr><td>12–15</td><td>Depresión severa</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="info-box coral reveal d4">
+    <strong>Alerta:</strong> Ítem 8 del PHQ-9 ("pensamientos de hacerse daño") con puntaje ≥1 → evaluación inmediata del riesgo suicida, independientemente del total.
+  </div>
+</div>
+
+<!-- 06 FLUJOGRAMA -->
+<div class="slide" data-slide="7">
+  <div class="slide-num reveal">06 — Flujograma</div>
+  <h2 class="reveal d1">¿Qué hago <em>paso a paso</em> en la consulta?</h2>
+  <p class="lead reveal d2">Flujograma de tamizaje y referencia según GPC MINSA 2023 para establecimientos I-1 a I-4.</p>
+  <div class="flow">
+    <div class="flow-step reveal d1"><div class="flow-dot">01</div><div class="flow-body"><div class="flow-title">Identificar síntomas o factores de riesgo</div><div class="flow-desc">Servicios priorizados: Medicina · SSyR · TB · ITS-VIH · CRED (acompañantes) · Cáncer</div></div></div>
+    <div class="flow-step reveal d2"><div class="flow-dot">02</div><div class="flow-body"><div class="flow-title">Aplicar PHQ-9 (18–59 a.) o GDS-15 (≥60 a.)</div><div class="flow-desc">Formato impreso o digital. ≥5 puntos = tamizaje positivo.</div></div></div>
+    <div class="flow-step reveal d3"><div class="flow-dot">03</div><div class="flow-body"><div class="flow-title">Evaluar riesgo suicida</div><div class="flow-desc">Presente → atención inmediata en medicina. Ausente → consejería + interconsulta.</div></div></div>
+    <div class="flow-step reveal d4"><div class="flow-dot">04</div><div class="flow-body"><div class="flow-title">Referir a salud mental / CSMC</div><div class="flow-desc">Depresión moderada–severa, sin respuesta en 2–4 semanas, comorbilidad psiquiátrica.</div></div></div>
+    <div class="flow-step reveal d5"><div class="flow-dot">05</div><div class="flow-body"><div class="flow-title">Seguimiento estructurado</div><div class="flow-desc">1er control: 8 días (severa) / 15 días (moderada). Seguimiento mínimo 6 meses post-remisión.</div></div></div>
+  </div>
+</div>
+
+<!-- 07 TRATAMIENTO -->
+<div class="slide" data-slide="8">
+  <div class="slide-num reveal">07 — Tratamiento</div>
+  <h2 class="reveal d1">ISRS de <em>primera línea</em> — lo que el primer nivel puede prescribir</h2>
+  <div class="two-col">
+    <div class="col-card reveal d2">
+      <h3>ISRS — Primera Línea (GPC MINSA)</h3>
+      <div class="table-wrap" style="margin-top:12px">
+        <table>
+          <thead><tr><th>Fármaco</th><th>Rango diario</th><th>Inicio</th></tr></thead>
+          <tbody>
+            <tr><td>Sertralina</td><td>50–200 mg</td><td>25 mg × 6d</td></tr>
+            <tr><td>Fluoxetina</td><td>20–60 mg</td><td>10 mg × 6d</td></tr>
+            <tr><td>Citalopram</td><td>20–40 mg</td><td>10 mg × 6d</td></tr>
+            <tr><td>Escitalopram</td><td>10–20 mg</td><td>5 mg × 6d</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-card reveal d3">
+      <h3>Puntos críticos que el primer nivel ignora</h3>
+      <ul>
+        <li>Iniciar con <strong>mitad de dosis mínima por 6 días</strong> — reduce activación inicial</li>
+        <li>Efecto terapéutico real: <strong>4–6 semanas</strong>. No cambiar antes.</li>
+        <li>Retiro gradual: <strong>25% de reducción semanal</strong></li>
+        <li>Adultos mayores con cardiopatía: <strong>no amitriptilina</strong></li>
+        <li>Respuesta = <strong>≥50% reducción del PHQ-9</strong> vs. basal</li>
+      </ul>
+    </div>
+  </div>
+  <div class="info-box coral reveal d4">
+    <strong>Refractariedad:</strong> Sin respuesta en 4–8 semanas → reevaluar diagnóstico. Descartar trastorno bipolar, trastorno de personalidad o consumo de sustancias.
+  </div>
+</div>
+
+<!-- 08 DIAGNÓSTICO DIFERENCIAL -->
+<div class="slide" data-slide="9">
+  <div class="slide-num reveal">08 — Diagnóstico Diferencial</div>
+  <h2 class="reveal d1">Primero descartar — <em>no todo es depresión</em></h2>
+  <div class="two-col">
+    <div class="col-card reveal d2">
+      <h3>Causas Orgánicas Obligatorias</h3>
+      <ul>
+        <li><strong>Endocrinas:</strong> hipotiroidismo, diabetes, Cushing, Addison</li>
+        <li><strong>Neurológicas:</strong> Parkinson, Alzheimer, TEC, epilepsia temporal, ACV</li>
+        <li><strong>Infecciosas:</strong> VIH, TB, hepatitis viral, COVID-19 post-agudo</li>
+        <li><strong>Farmacológicas:</strong> corticoides, anticonceptivos, betabloqueantes</li>
+        <li><strong>Nutricionales:</strong> déficit de B12, folato, vitamina D</li>
+      </ul>
+    </div>
+    <div class="col-card reveal d3">
+      <h3>Otras Condiciones Psiquiátricas</h3>
+      <ul>
+        <li><strong>Trastorno bipolar:</strong> ISRS sin estabilizador puede precipitar manía o ciclado rápido</li>
+        <li><strong>Trastorno adaptativo:</strong> estrés identificable reciente, menor severidad</li>
+        <li><strong>Duelo normal:</strong> tristeza proporcional, sin anhedonia persistente</li>
+        <li><strong>Distimia F34.1:</strong> depresión crónica leve ≥2 años, infradiagnosticada</li>
+      </ul>
+    </div>
+  </div>
+  <div class="info-box coral reveal d4">
+    <strong>Error crítico:</strong> ISRS en trastorno bipolar puede precipitar manía, ciclado rápido e ideación suicida. Siempre preguntar por episodios previos de euforia o poco sueño sin cansancio.
+  </div>
+</div>
+
+<!-- CIERRE -->
+<div class="closing" data-slide="10">
+  <div class="closing-quote reveal"><em>"Si tu paciente crónico no mejora"</em> — pregúntale cómo se siente</div>
+  <div class="closing-sub reveal d1">Y aplica el PHQ-9. Con ≥5 puntos: consejería + referencia. Con riesgo suicida: atención inmediata.</div>
+  <div class="pills reveal d2">
+    <span class="pill">PHQ-9 · 18–59 años</span>
+    <span class="pill">GDS-15 · ≥60 años</span>
+    <span class="pill">ISRS primera línea</span>
+    <span class="pill">Seguimiento ≥6 meses</span>
+    <span class="pill">Descartar bipolar</span>
+  </div>
+  <div class="closing-author reveal d3">
+    <div class="closing-author-name">Henry Sánchez Rueda</div>
+    <div class="closing-author-role">Médico Psiquiatra · CSMC Allin Kawsay · GPC MINSA 2023</div>
+  </div>
+</div>
+
+<script>
+// SCROLL REVEAL
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-scale').forEach(el=>obs.observe(el));
+
+// PROGRESS + COUNTER
+const slides=document.querySelectorAll('[data-slide]');
+const prog=document.getElementById('progress');
+const ctr=document.getElementById('counter');
+const total=slides.length;
+
+function getCur(){
+  let c=0,m=Infinity;
+  slides.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<m){m=d;c=i;}});
+  return c;
+}
+function upd(){
+  const i=getCur();
+  prog.style.width=(i/(total-1)*100)+'%';
+  ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+}
+window.addEventListener('scroll',upd,{passive:true});
+function go(i){if(i>=0&&i<total)slides[i].scrollIntoView({behavior:'smooth'});}
+document.addEventListener('keydown',e=>{
+  const c=getCur();
+  if(e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(c+1);}
+  else if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();go(c-1);}
+  else if(e.key==='Home')go(0);
+  else if(e.key==='End')go(total-1);
+});
+setTimeout(()=>{document.getElementById('nav-hint').style.opacity='0';},5000);
+upd();
+</script>
+</body>
+</html>
